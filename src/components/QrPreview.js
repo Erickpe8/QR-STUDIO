@@ -1,15 +1,30 @@
 export function renderQrPreview() {
-    const preview = document.getElementById("qr-preview");
+    const container = document.getElementById("qr-preview");
 
-    preview.innerHTML = `
-        <div class="bg-white w-80 rounded-xl shadow-lg p-6 flex flex-col items-center">
-        <div class="w-56 h-56 border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center text-slate-400">
+    container.innerHTML = `
+        <div class="bg-white rounded-2xl shadow p-6 w-full max-w-sm flex flex-col items-center">
+        <div
+            id="qr-canvas-wrapper"
+            class="w-56 h-56 flex items-center justify-center border-2 border-dashed rounded-xl text-slate-400"
+        >
             Vista previa del QR
         </div>
-
-        <p class="mt-4 text-sm text-slate-500 text-center">
-            El código QR aparecerá aquí
-        </p>
         </div>
     `;
+}
+
+export function updateQrPreview(text) {
+    const wrapper = document.getElementById("qr-canvas-wrapper");
+    if (!wrapper || !text) return;
+
+    wrapper.innerHTML = "";
+
+    QRCode.toCanvas(
+        text,
+        { width: 220, margin: 2 },
+        (err, canvas) => {
+        if (err) return;
+        wrapper.appendChild(canvas);
+        }
+    );
 }

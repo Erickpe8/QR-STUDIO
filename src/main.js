@@ -12,3 +12,4 @@ renderQrUrlForm();
 
 goToStep(1);
 lucide.createIcons();
+
