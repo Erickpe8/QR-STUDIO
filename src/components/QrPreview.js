@@ -1,40 +1,43 @@
 import { initQR, downloadQR } from "../core/qrEngine.js";
 
+let qrCanvasEl = null;
+
 export function renderQrPreview() {
     const container = document.getElementById("qr-preview");
     if (!container) return;
 
     container.innerHTML = `
-        <div class="flex flex-col items-center w-full gap-5">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 w-[340px]">
+            <div class="text-sm font-semibold text-slate-700 mb-4">
+                Vista previa
+            </div>
 
-            <div class="w-full max-w-[580px]">
-                <div class="relative mx-auto bg-white border border-slate-200 border-[8px] rounded-t-2xl h-[220px] md:h-[300px] max-w-[520px] shadow-2xl">
-                    <div class="relative rounded-xl overflow-hidden h-full w-full bg-slate-900 flex items-center justify-center">
-
-                        <div
-                            id="qr-placeholder"
-                            class="absolute inset-0 flex items-center justify-center text-slate-300 text-sm text-center px-6 transition-opacity duration-200"
-                        >
-                            El codigo QR aparecera aqui
-                        </div>
-
-                        <div
-                            id="qr-canvas"
-                            class="hidden flex items-center justify-center transition-opacity duration-200"
-                            style="width: 220px; height: 220px;"
-                        ></div>
-
+            <!-- CONTENEDOR FIJO -->
+            <div class="flex items-center justify-center bg-slate-100 rounded-xl w-full h-[260px]">
+                <div
+                    class="relative flex items-center justify-center"
+                    style="width:220px; height:220px;"
+                >
+                    <div
+                        id="qr-placeholder"
+                        class="absolute inset-0 flex items-center justify-center
+                               text-slate-400 text-sm text-center px-4"
+                    >
+                        El código QR aparecerá aquí
                     </div>
-                </div>
-                <div class="relative mx-auto bg-white border border-slate-200 rounded-b-2xl rounded-t-sm h-[18px] max-w-[560px] shadow">
-                    <div class="absolute left-1/2 top-0 -translate-x-1/2 rounded-b-xl w-[64px] h-[6px] md:w-[96px] md:h-[8px] bg-slate-200"></div>
+
+                    <!-- AQUÍ SE MONTA EL QR -->
+                    <div
+                        id="qr-canvas"
+                        class="absolute inset-0 flex items-center justify-center"
+                    ></div>
                 </div>
             </div>
 
             <button
                 id="qr-download-btn"
-                class="px-5 py-3 bg-indigo-600 text-white rounded-xl
-                        hover:bg-indigo-700 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                class="mt-5 w-full px-4 py-3 bg-indigo-600 text-white rounded-xl
+                       hover:bg-indigo-700 transition disabled:opacity-50"
                 disabled
             >
                 Descargar QR
@@ -42,35 +45,27 @@ export function renderQrPreview() {
         </div>
     `;
 
-    initQR();
+    qrCanvasEl = document.getElementById("qr-canvas");
 
-    const downloadBtn = document.getElementById("qr-download-btn");
-    if (downloadBtn) {
-        downloadBtn.addEventListener("click", () => downloadQR("qr-studio.png"));
-    }
+    initQR(qrCanvasEl);
+
+    document
+        .getElementById("qr-download-btn")
+        .addEventListener("click", () => downloadQR("qr-studio.png"));
 }
 
 export function setPreviewState(hasData) {
     const placeholder = document.getElementById("qr-placeholder");
-    const canvas = document.getElementById("qr-canvas");
     const downloadBtn = document.getElementById("qr-download-btn");
 
-    if (!placeholder || !canvas || !downloadBtn) return;
+    if (!placeholder || !downloadBtn) return;
 
-    if (hasData) {
-        placeholder.classList.add("opacity-0");
-        placeholder.classList.add("pointer-events-none");
+    placeholder.style.opacity = hasData ? "0" : "1";
+    placeholder.style.pointerEvents = hasData ? "none" : "auto";
 
-        canvas.classList.remove("hidden");
-        canvas.classList.add("opacity-100");
+    downloadBtn.disabled = !hasData;
+}
 
-        downloadBtn.disabled = false;
-    } else {
-        placeholder.classList.remove("opacity-0");
-        placeholder.classList.remove("pointer-events-none");
-
-        canvas.classList.add("hidden");
-
-        downloadBtn.disabled = true;
-    }
+export function getQrCanvas() {
+    return qrCanvasEl;
 }
