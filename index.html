@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>QR Studio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Tailwind CDN (luego se puede compilar) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+
+    <body class="bg-slate-100 min-h-screen">
+
+    <!-- HEADER -->
+    <header id="app-header"></header>
+
+    <!-- MAIN LAYOUT -->
+    <div class="flex h-[calc(100vh-64px)]">
+
+        <!-- SIDEBAR -->
+        <aside id="app-sidebar" class="w-72 bg-white border-r"></aside>
+
+        <!-- CONTENT -->
+        <main class="flex-1 grid grid-cols-2 gap-6 p-6 overflow-y-auto">
+
+        <!-- LEFT: STEPS + FORMS -->
+        <section class="space-y-6">
+            <div id="step-indicator"></div>
+            <div id="module-container"></div>
+        </section>
+
+        <!-- RIGHT: PREVIEW -->
+        <section class="flex justify-center items-start">
+            <div id="qr-preview"></div>
+        </section>
+
+        </main>
+    </div>
+
+    <!-- MAIN SCRIPT -->
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
