@@ -2,24 +2,25 @@ export function renderSidebar() {
     const sidebar = document.getElementById("app-sidebar");
     if (!sidebar) return;
 
+    // Ajusta el contenedor para que no reserve espacio extra en mobile
+    sidebar.className = "relative md:w-72 w-0 flex-shrink-0";
+
     sidebar.innerHTML = `
         <div
             id="sidebar-overlay"
             class="fixed inset-0 bg-black/40 z-40 hidden md:hidden"
         ></div>
 
-        <aside
+        <div
             id="sidebar-panel"
             class="
-                fixed md:static
-                inset-y-0 left-0
+                absolute md:static inset-y-0 left-0
                 z-50 md:z-auto
-                w-64
-                h-full
-                bg-white
+                w-72 h-full bg-white
                 border-r border-slate-200
                 transform -translate-x-full md:translate-x-0
                 transition-transform duration-300 ease-in-out
+                shadow-lg md:shadow-none
             "
         >
             <nav class="h-full p-6 space-y-4">
@@ -36,7 +37,7 @@ export function renderSidebar() {
                     <span>URL / Enlace</span>
                 </button>
             </nav>
-        </aside>
+        </div>
     `;
 
     const overlay = document.getElementById("sidebar-overlay");
