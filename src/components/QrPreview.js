@@ -13,18 +13,33 @@ export function renderQrPreview() {
     `;
 }
 
-export function updateQrPreview(text) {
+export function updateQrPreview(text, fgColor = "#111827", bgColor = "#ffffff") {
     const wrapper = document.getElementById("qr-canvas-wrapper");
-    if (!wrapper || !text) return;
+    if (!wrapper) return;
 
     wrapper.innerHTML = "";
 
+    if (!text) {
+        wrapper.classList.add("text-slate-400");
+        wrapper.innerHTML = "Vista previa del QR";
+        return;
+    }
+
     QRCode.toCanvas(
         text,
-        { width: 220, margin: 2 },
+        {
+        width: 220,
+        margin: 2,
+        color: {
+            dark: fgColor,
+            light: bgColor,
+        },
+        },
         (err, canvas) => {
         if (err) return;
+        wrapper.classList.remove("text-slate-400");
         wrapper.appendChild(canvas);
         }
     );
 }
+

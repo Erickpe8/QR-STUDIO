@@ -1,5 +1,6 @@
 import { goToStep } from "../../components/StepIndicator.js";
 import { updateQrPreview } from "../../components/QrPreview.js";
+import { qrState } from "../../state.js";
 
 export function renderQrUrlForm() {
     const container = document.getElementById("module-container");
