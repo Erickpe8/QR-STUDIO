@@ -1,6 +1,5 @@
 import { goToStep } from "../../components/StepIndicator.js";
-import { updateQrPreview } from "../../components/QrPreview.js";
-import { qrState } from "../../state.js";
+import { updateQR } from "../../core/qrEngine.js";
 
 export function renderQrUrlForm() {
     const container = document.getElementById("module-container");
@@ -49,18 +48,22 @@ export function renderQrUrlForm() {
     const button = document.getElementById("qr-url-next");
     const error = document.getElementById("qr-url-error");
 
+    const canvas = document.getElementById("qr-canvas");
+    const placeholder = document.getElementById("qr-placeholder");
+
     input.addEventListener("input", () => {
         const value = input.value.trim();
 
-    try {
-        if (!value) throw new Error();
-
+        try {
         new URL(value);
 
         error.classList.add("hidden");
         button.disabled = false;
 
-        updateQrPreview(value);
+        placeholder.classList.add("hidden");
+        canvas.classList.remove("hidden");
+
+        updateQR(value, canvas);
         } catch {
         error.classList.remove("hidden");
         button.disabled = true;

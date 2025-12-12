@@ -1,45 +1,27 @@
+import { initQR } from "../core/qrEngine.js";
+
 export function renderQrPreview() {
     const container = document.getElementById("qr-preview");
+    if (!container) return;
 
     container.innerHTML = `
-        <div class="bg-white rounded-2xl shadow p-6 w-full max-w-sm flex flex-col items-center">
+        <div class="bg-white rounded-2xl shadow p-6 w-full max-w-sm">
+        
         <div
-            id="qr-canvas-wrapper"
-            class="w-56 h-56 flex items-center justify-center border-2 border-dashed rounded-xl text-slate-400"
+            id="qr-placeholder"
+            class="h-[260px] flex items-center justify-center
+                text-slate-400 text-sm border-2 border-dashed rounded-xl"
         >
-            Vista previa del QR
+            El código QR aparecerá aquí
         </div>
+
+        <div
+            id="qr-canvas"
+            class="hidden flex justify-center"
+        ></div>
+
         </div>
     `;
+
+    initQR(document.getElementById("qr-canvas"));
 }
-
-export function updateQrPreview(text, fgColor = "#111827", bgColor = "#ffffff") {
-    const wrapper = document.getElementById("qr-canvas-wrapper");
-    if (!wrapper) return;
-
-    wrapper.innerHTML = "";
-
-    if (!text) {
-        wrapper.classList.add("text-slate-400");
-        wrapper.innerHTML = "Vista previa del QR";
-        return;
-    }
-
-    QRCode.toCanvas(
-        text,
-        {
-        width: 220,
-        margin: 2,
-        color: {
-            dark: fgColor,
-            light: bgColor,
-        },
-        },
-        (err, canvas) => {
-        if (err) return;
-        wrapper.classList.remove("text-slate-400");
-        wrapper.appendChild(canvas);
-        }
-    );
-}
-
