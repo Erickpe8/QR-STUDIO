@@ -47,8 +47,15 @@ export function goToStep(step) {
         el.classList.toggle("is-complete", current < step);
 
         const icon = el.querySelector("i");
-        if (current < step) {
+
+        if (icon && current < step) {
         icon.setAttribute("data-lucide", "check");
+        }
+
+        if (icon && current === step) {
+        if (current === 1) icon.setAttribute("data-lucide", "link");
+        if (current === 2) icon.setAttribute("data-lucide", "file-text");
+        if (current === 3) icon.setAttribute("data-lucide", "palette");
         }
     });
 
