@@ -19,12 +19,12 @@
     <header id="app-header"></header>
 
     <!-- MAIN LAYOUT -->
-    <div class="flex h-[calc(100vh-64px)]">
+    <div class="flex h-[calc(100vh-64px)] overflow-hidden">
         <!-- SIDEBAR -->
-        <aside id="app-sidebar" class="w-72 bg-white border-r"></aside>
+        <aside id="app-sidebar" class="relative md:w-72 w-0 flex-shrink-0"></aside>
 
         <!-- CONTENT -->
-        <main class="flex-1 grid grid-cols-2 gap-6 p-6 overflow-y-auto">
+        <main class="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-6 p-4 md:p-6 overflow-y-auto">
             <!-- LEFT: STEPS + FORMS -->
             <section class="space-y-6">
                 <div id="step-indicator"></div>
