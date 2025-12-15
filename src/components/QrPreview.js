@@ -7,7 +7,7 @@ export function renderQrPreview() {
     if (!container) return;
 
     container.innerHTML = `
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 w-[340px]">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 w-full max-w-[360px] xl:w-[360px] shrink-0">
             <div class="text-sm font-semibold text-slate-700 mb-4">
                 Vista previa
             </div>
@@ -23,7 +23,7 @@ export function renderQrPreview() {
                         class="absolute inset-0 flex items-center justify-center
                                text-slate-400 text-sm text-center px-4"
                     >
-                        El código QR aparecerá aquí
+                        El codigo QR aparecera aqui
                     </div>
 
                     <!-- AQUÍ SE MONTA EL QR -->
