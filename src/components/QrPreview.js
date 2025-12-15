@@ -22,6 +22,7 @@ export function renderQrPreview() {
                         id="qr-placeholder"
                         class="absolute inset-0 flex items-center justify-center
                                text-slate-400 text-sm text-center px-4"
+                        aria-live="polite"
                     >
                         El codigo QR aparecera aqui
                     </div>
@@ -30,6 +31,8 @@ export function renderQrPreview() {
                     <div
                         id="qr-canvas"
                         class="absolute inset-0 flex items-center justify-center"
+                        role="img"
+                        aria-label="Vista previa del codigo QR"
                     ></div>
                 </div>
             </div>
@@ -38,6 +41,7 @@ export function renderQrPreview() {
                 id="qr-download-btn"
                 class="mt-5 w-full px-4 py-3 bg-indigo-600 text-white rounded-xl
                        hover:bg-indigo-700 transition disabled:opacity-50"
+                aria-label="Descargar codigo QR"
                 disabled
             >
                 Descargar QR
