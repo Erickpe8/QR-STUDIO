@@ -1,17 +1,5 @@
-﻿import { test, expect } from "@playwright/test";
-
-async function goToContentStep(page, typeId = "url") {
-    await page.goto("/");
-    await page.click(`[data-qr-type="${typeId}"]`);
-    await page.waitForSelector("#qr-url-input");
-}
-
-async function goToDesignStep(page) {
-    await goToContentStep(page);
-    await page.fill("#qr-url-input", "https://example.com");
-    await page.click("#qr-content-next");
-    await page.waitForSelector("#back-to-content");
-}
+import { test, expect } from "@playwright/test";
+import { goToContentStep, goToDesignStep } from "./utils";
 
 test.describe("QR Studio editor layout", () => {
     test("Step 1 no renderiza preview ni columnas extras", async ({ page }) => {
