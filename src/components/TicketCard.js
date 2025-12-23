@@ -76,7 +76,7 @@ export function updateTicketCard(props) {
         const footer = document.getElementById("ticket-footer");
 
         if (header) {
-            header.className = `flex items-center gap-3 ${
+            header.className = `flex items-center gap-3 overflow-hidden ${
                 alignment === layoutClasses.center
                     ? "justify-center text-center"
                     : alignment === layoutClasses.left
@@ -86,7 +86,7 @@ export function updateTicketCard(props) {
         }
 
         if (footer) {
-            footer.className = `flex flex-col gap-2 opacity-80 ${
+            footer.className = `flex flex-col gap-2 opacity-80 overflow-hidden ${
                 alignment === layoutClasses.center
                     ? "items-center text-center"
                     : alignment === layoutClasses.left
@@ -99,8 +99,10 @@ export function updateTicketCard(props) {
     const handle = document.getElementById("ticket-handle");
     const title = document.getElementById("ticket-title");
     const subtitle = document.getElementById("ticket-subtitle");
+    const header = document.getElementById("ticket-header");
     const number = document.getElementById("ticket-number");
     const footer = document.getElementById("ticket-footer");
+    const footerLine = document.getElementById("ticket-footer-line");
     const footerSpacer = document.getElementById("ticket-footer-spacer");
     const footerLeft = document.getElementById("ticket-footer-left");
     const footerRight = document.getElementById("ticket-footer-right");
@@ -108,26 +110,36 @@ export function updateTicketCard(props) {
     const fontScale =
         fontScaleClasses[ticketProps.fontScale] || fontScaleClasses.md;
 
+    const headerVisible =
+        (ticketProps.showHandle && ticketProps.handle) ||
+        (ticketProps.showTitle && ticketProps.title) ||
+        (ticketProps.showSubtitle && ticketProps.subtitle) ||
+        (ticketProps.logoEnabled && ticketProps.logo);
+
+    if (header) {
+        header.classList.toggle("hidden", !headerVisible);
+    }
+
     updateText(
         handle,
         ticketProps.handle,
         ticketProps.showHandle,
         fontScale.handle,
-        "opacity-60 uppercase tracking-wide"
+        "opacity-60 uppercase tracking-wide truncate max-w-full"
     );
     updateText(
         title,
         ticketProps.title,
         ticketProps.showTitle,
         fontScale.title,
-        "font-semibold tracking-wide"
+        "font-semibold tracking-wide truncate max-w-full"
     );
     updateText(
         subtitle,
         ticketProps.subtitle,
         ticketProps.showSubtitle,
         fontScale.subtitle,
-        "opacity-70"
+        "opacity-70 truncate max-w-full"
     );
     updateText(
         number,
@@ -137,25 +149,34 @@ export function updateTicketCard(props) {
         "font-semibold tracking-tight"
     );
 
-    if (footer) {
-        footer.classList.toggle("hidden", !ticketProps.showFooter);
+    if (footerLine) {
+        const showFooter =
+            ticketProps.showFooter &&
+            (ticketProps.footerLeft || ticketProps.footerRight);
+        footerLine.classList.toggle("hidden", !showFooter);
     }
     if (footerSpacer) {
-        footerSpacer.classList.toggle("hidden", ticketProps.showFooter);
+        const showFooter =
+            ticketProps.showFooter &&
+            (ticketProps.footerLeft || ticketProps.footerRight);
+        footerSpacer.classList.toggle("hidden", showFooter);
     }
+    const footerLeftValue = formatDateForDisplay(ticketProps.footerLeft);
+    const footerRightValue = formatTimeForDisplay(ticketProps.footerRight);
+
     updateText(
         footerLeft,
-        ticketProps.footerLeft,
+        footerLeftValue,
         ticketProps.showFooter,
         fontScale.footer,
-        "opacity-70"
+        "opacity-70 truncate max-w-[160px]"
     );
     updateText(
         footerRight,
-        ticketProps.footerRight,
+        footerRightValue,
         ticketProps.showFooter,
         fontScale.footer,
-        "opacity-70"
+        "opacity-70 truncate max-w-[160px]"
     );
 
     const badgeRow = document.getElementById("ticket-badges");
@@ -164,11 +185,9 @@ export function updateTicketCard(props) {
     }
 
     const logo = document.getElementById("ticket-logo");
-    const logoPlaceholder = document.getElementById("ticket-logo-placeholder");
     const logoWrapper = document.getElementById("ticket-logo-wrapper");
-    if (logo && logoWrapper && logoPlaceholder) {
-        const showLogo = ticketProps.logoEnabled;
-        const hasImage = Boolean(ticketProps.logo);
+    if (logo && logoWrapper) {
+        const showLogo = ticketProps.logoEnabled && ticketProps.logo;
 
         logoWrapper.classList.toggle("hidden", !showLogo);
         logoWrapper.className = `flex ${
@@ -177,14 +196,9 @@ export function updateTicketCard(props) {
                 : "justify-center"
         }`;
 
-        if (showLogo && hasImage) {
+        if (showLogo) {
             logo.src = ticketProps.logo;
             logo.classList.remove("hidden");
-            logoPlaceholder.classList.add("hidden");
-        } else if (showLogo) {
-            logo.classList.add("hidden");
-            logoPlaceholder.classList.remove("hidden");
-            logoPlaceholder.textContent = getInitials(ticketProps);
         }
     }
 
@@ -223,7 +237,7 @@ function getTicketMarkup(props) {
 
                     <div id="ticket-header" class="flex items-center justify-center gap-3">
                         <div id="ticket-logo-wrapper" class="${
-        ticketProps.logoEnabled ? "" : "hidden"
+        ticketProps.logoEnabled && ticketProps.logo ? "" : "hidden"
     }">
                             <div
                                 class="w-12 h-12 rounded-full border border-white/15 bg-white/5 backdrop-blur flex items-center justify-center overflow-hidden"
@@ -233,7 +247,6 @@ function getTicketMarkup(props) {
                                     class="w-full h-full object-cover"
                                     alt="Logo"
                                 />
-                                <span id="ticket-logo-placeholder" class="opacity-80 text-sm font-semibold tracking-wide"></span>
                             </div>
                         </div>
                         <div class="flex flex-col gap-1">
@@ -257,7 +270,7 @@ function getTicketMarkup(props) {
 
                 <div id="ticket-footer" class="flex flex-col gap-2 opacity-80">
                     <div id="ticket-number" class="${fontScale.number}"></div>
-                    <div class="flex items-center justify-between w-full">
+                    <div id="ticket-footer-line" class="flex items-center justify-between w-full">
                         <span id="ticket-footer-left" class="${fontScale.footer}"></span>
                         <span id="ticket-footer-right" class="${fontScale.footer}"></span>
                     </div>
@@ -403,13 +416,16 @@ function hexToRgba(hex, alpha) {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function getInitials(ticketProps) {
-    const source = ticketProps.title || ticketProps.handle || "QR";
-    const cleaned = source.replace(/[@/#]/g, "").trim();
-    const parts = cleaned.split(/\s+/).filter(Boolean);
+function formatDateForDisplay(value) {
+    if (!value) return "";
+    const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return value;
+    return `${match[3]}/${match[2]}/${match[1]}`;
+}
 
-    if (!parts.length) return "QR";
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+function formatTimeForDisplay(value) {
+    if (!value) return "";
+    const match = value.match(/^(\d{2}):(\d{2})$/);
+    if (!match) return value;
+    return `${match[1]}:${match[2]}`;
 }

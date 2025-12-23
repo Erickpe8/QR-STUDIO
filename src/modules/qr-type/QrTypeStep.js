@@ -3,7 +3,7 @@ import { qrState, resetPayload, setSelectedType } from "../../state.js";
 import { setPreviewState } from "../../components/QrPreview.js";
 
 const baseButtonClass =
-    "w-full flex items-center gap-3 px-4 py-4 rounded-xl border text-left transition";
+    "w-full flex items-center gap-3 px-4 py-4 rounded-xl border text-left transition min-h-[96px]";
 const activeButtonClass = "border-indigo-500 bg-indigo-50 text-indigo-700";
 const inactiveButtonClass =
     "border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
@@ -13,7 +13,7 @@ export function renderQrTypeStep({ onNext } = {}) {
     if (!container) return;
 
     container.innerHTML = `
-        <div class="bg-white rounded-2xl shadow p-6 space-y-6">
+        <div class="bg-white rounded-2xl shadow p-5 space-y-4">
             <div>
                 <h3 class="text-lg font-semibold text-slate-800">
                     Tipo de QR
@@ -23,7 +23,7 @@ export function renderQrTypeStep({ onNext } = {}) {
                 </p>
             </div>
 
-            <div class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 ${qrTypes
                     .map(
                         type => `

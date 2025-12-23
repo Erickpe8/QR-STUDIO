@@ -84,7 +84,7 @@ export function refreshTicketCard() {
 function getTicketProps() {
     return {
         ...qrState.ticket,
-        qrData: qrState.text,
+        qrData: qrState.qrData,
     };
 }
 
