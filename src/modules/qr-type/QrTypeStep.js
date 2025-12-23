@@ -14,7 +14,7 @@ export function renderQrTypeStep({ onNext } = {}) {
     if (!container) return;
 
     container.innerHTML = `
-        <div class="bg-white rounded-[32px] shadow-lg p-6 space-y-6 w-full max-w-6xl mx-auto">
+        <div class="bg-white rounded-[32px] shadow-lg p-6 space-y-6 w-full">
             <div>
                 <h3 class="text-lg font-semibold text-slate-800">
                     Tipo de QR
