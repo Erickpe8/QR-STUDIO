@@ -1,5 +1,6 @@
 import { updateQR } from "../../core/qrEngine.js";
 import { setPreviewState } from "../../components/QrPreview.js";
+import { notifyList } from "../../ui/alerts.js";
 import { buildQrDataByType, qrState } from "../../state.js";
 
 export function renderQrContentForm({ onBack, onNext } = {}) {
@@ -476,6 +477,7 @@ function getFormMarkup() {
 function setupUrlForm(nextButton) {
     const input = document.getElementById("qr-url-input");
     const error = document.getElementById("qr-url-error");
+    const notifyMissing = createMissingNotifier();
 
     let touched = false;
 
@@ -486,6 +488,12 @@ function setupUrlForm(nextButton) {
 
         error.classList.toggle("hidden", !showError);
         nextButton.disabled = !isValid;
+
+        if (touched && !isValid) {
+            notifyMissing(["URL valida"]);
+        } else {
+            notifyMissing([]);
+        }
 
         applyQrData(isValid, { url: value }, nextButton);
     };
@@ -504,6 +512,7 @@ function setupWifiForm(nextButton) {
     const encryptionSelect = document.getElementById("wifi-encryption");
     const hiddenInput = document.getElementById("wifi-hidden");
     const error = document.getElementById("wifi-ssid-error");
+    const notifyMissing = createMissingNotifier();
 
     let touched = false;
 
@@ -517,6 +526,12 @@ function setupWifiForm(nextButton) {
 
         error.classList.toggle("hidden", !showError);
         nextButton.disabled = !isValid;
+
+        if (touched && !isValid) {
+            notifyMissing(["SSID"]);
+        } else {
+            notifyMissing([]);
+        }
 
         const payload = {
             ssid,
@@ -549,6 +564,7 @@ function setupContactForm(nextButton) {
     const titleInput = document.getElementById("contact-title");
     const websiteInput = document.getElementById("contact-website");
     const error = document.getElementById("contact-name-error");
+    const notifyMissing = createMissingNotifier();
 
     let touched = false;
 
@@ -559,6 +575,12 @@ function setupContactForm(nextButton) {
 
         error.classList.toggle("hidden", !showError);
         nextButton.disabled = !isValid;
+
+        if (touched && !isValid) {
+            notifyMissing(["Nombre completo"]);
+        } else {
+            notifyMissing([]);
+        }
 
         const payload = {
             fullName,
@@ -591,6 +613,7 @@ function setupContactForm(nextButton) {
 function setupTextForm(nextButton) {
     const input = document.getElementById("text-message");
     const error = document.getElementById("text-message-error");
+    const notifyMissing = createMissingNotifier();
 
     let touched = false;
 
@@ -600,6 +623,11 @@ function setupTextForm(nextButton) {
         const showError = touched && !isValid;
 
         error.classList.toggle("hidden", !showError);
+        if (touched && !isValid) {
+            notifyMissing(["Mensaje"]);
+        } else {
+            notifyMissing([]);
+        }
         applyQrData(isValid, { message }, nextButton);
     };
 
@@ -615,6 +643,7 @@ function setupWhatsAppForm(nextButton) {
     const phoneInput = document.getElementById("whatsapp-phone");
     const messageInput = document.getElementById("whatsapp-message");
     const error = document.getElementById("whatsapp-phone-error");
+    const notifyMissing = createMissingNotifier();
 
     let touched = false;
 
@@ -625,6 +654,11 @@ function setupWhatsAppForm(nextButton) {
         const showError = touched && !isValid;
 
         error.classList.toggle("hidden", !showError);
+        if (touched && !isValid) {
+            notifyMissing(["Numero de telefono"]);
+        } else {
+            notifyMissing([]);
+        }
         applyQrData(
             isValid,
             {
@@ -648,6 +682,7 @@ function setupWhatsAppForm(nextButton) {
 function setupLocationForm(nextButton) {
     const input = document.getElementById("location-address");
     const error = document.getElementById("location-address-error");
+    const notifyMissing = createMissingNotifier();
 
     let touched = false;
 
@@ -657,6 +692,11 @@ function setupLocationForm(nextButton) {
         const showError = touched && !isValid;
 
         error.classList.toggle("hidden", !showError);
+        if (touched && !isValid) {
+            notifyMissing(["Direccion o lugar"]);
+        } else {
+            notifyMissing([]);
+        }
         applyQrData(isValid, { address }, nextButton);
     };
 
@@ -680,6 +720,7 @@ function setupEventForm(nextButton) {
     const titleError = document.getElementById("event-title-error");
     const startDateError = document.getElementById("event-start-date-error");
     const startTimeError = document.getElementById("event-start-time-error");
+    const notifyMissing = createMissingNotifier();
 
     const touched = {
         title: false,
@@ -696,6 +737,11 @@ function setupEventForm(nextButton) {
         const isStartDateValid = Boolean(startDate);
         const isStartTimeValid = Boolean(startTime);
         const isValid = isTitleValid && isStartDateValid && isStartTimeValid;
+        const hasTouched = Object.values(touched).some(Boolean);
+        const missing = [];
+        if (!isTitleValid) missing.push("Titulo del evento");
+        if (!isStartDateValid) missing.push("Fecha de inicio");
+        if (!isStartTimeValid) missing.push("Hora de inicio");
 
         titleError.classList.toggle(
             "hidden",
@@ -709,6 +755,12 @@ function setupEventForm(nextButton) {
             "hidden",
             !(touched.startTime && !isStartTimeValid)
         );
+
+        if (hasTouched && !isValid) {
+            notifyMissing(missing);
+        } else {
+            notifyMissing([]);
+        }
 
         applyQrData(
             isValid,
@@ -751,6 +803,7 @@ function setupEmailForm(nextButton) {
     const subjectInput = document.getElementById("email-subject");
     const bodyInput = document.getElementById("email-body");
     const error = document.getElementById("email-to-error");
+    const notifyMissing = createMissingNotifier();
 
     let touched = false;
 
@@ -760,6 +813,11 @@ function setupEmailForm(nextButton) {
         const showError = touched && !isValid;
 
         error.classList.toggle("hidden", !showError);
+        if (touched && !isValid) {
+            notifyMissing(["Correo destino"]);
+        } else {
+            notifyMissing([]);
+        }
         applyQrData(
             isValid,
             {
@@ -784,6 +842,7 @@ function setupEmailForm(nextButton) {
 function setupPhoneForm(nextButton) {
     const input = document.getElementById("phone-number");
     const error = document.getElementById("phone-number-error");
+    const notifyMissing = createMissingNotifier();
 
     let touched = false;
 
@@ -794,6 +853,11 @@ function setupPhoneForm(nextButton) {
         const showError = touched && !isValid;
 
         error.classList.toggle("hidden", !showError);
+        if (touched && !isValid) {
+            notifyMissing(["Numero de telefono"]);
+        } else {
+            notifyMissing([]);
+        }
         applyQrData(isValid, { phone: cleanedPhone }, nextButton);
     };
 
@@ -842,6 +906,20 @@ function cleanPhoneValue(value) {
 function isValidPhone(value) {
     const cleaned = cleanPhoneValue(value);
     return /^\+?\d+$/.test(cleaned);
+}
+
+function createMissingNotifier() {
+    let lastKey = "";
+    return missing => {
+        if (!missing || missing.length === 0) {
+            lastKey = "";
+            return;
+        }
+        const key = missing.join("|");
+        if (key === lastKey) return;
+        lastKey = key;
+        notifyList("danger", "Revisa estos campos", missing);
+    };
 }
 
 function getWifiOptions() {

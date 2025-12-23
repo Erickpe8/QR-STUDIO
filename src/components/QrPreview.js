@@ -1,5 +1,6 @@
 import { initQR, downloadQR, updateQR } from "../core/qrEngine.js";
 import { renderTicketCard, updateTicketCard } from "./TicketCard.js";
+import { notifyLoading } from "../ui/alerts.js";
 import { qrState } from "../state.js";
 
 let qrCanvasEl = null;
@@ -48,7 +49,11 @@ export function renderQrPreview() {
     document
         .getElementById("qr-download-btn")
         .addEventListener("click", () => {
-            downloadTicket();
+            const notifyHandle = notifyLoading(
+                "Generando descarga",
+                "Preparando imagen"
+            );
+            downloadTicket(notifyHandle);
         });
 
     setPreviewState(false);
@@ -88,38 +93,41 @@ function getTicketProps() {
     };
 }
 
-async function downloadTicket(filename) {
+async function downloadTicket(notifyHandle, filename) {
     const ticket = document.getElementById("ticket-export");
 
-    if (!ticket) {
-        downloadQR(filename);
-        return;
-    }
+    try {
+        if (!ticket || typeof html2canvas === "undefined") {
+            downloadQR(filename);
+            notifyHandle.update("success", "Descarga lista", "Se guardo el ticket");
+            return;
+        }
 
-    if (typeof html2canvas === "undefined") {
-        downloadQR(filename);
-        return;
-    }
+        await nextFrame();
+        const rect = ticket.getBoundingClientRect();
+        const scale = rect.width < 340 ? 3 : 2;
 
-    await nextFrame();
-    const rect = ticket.getBoundingClientRect();
-
-    const scale = rect.width < 340 ? 3 : 2;
-
-    html2canvas(ticket, {
-        backgroundColor: null,
-        scale,
-        useCORS: true,
-        allowTaint: false,
-        logging: false,
-        width: Math.round(rect.width),
-        height: Math.round(rect.height),
-    }).then(canvas => {
+        const canvas = await html2canvas(ticket, {
+            backgroundColor: null,
+            scale,
+            useCORS: true,
+            allowTaint: false,
+            logging: false,
+            width: Math.round(rect.width),
+            height: Math.round(rect.height),
+        });
         const link = document.createElement("a");
         link.href = canvas.toDataURL("image/png");
         link.download = filename || getTicketFilename();
         link.click();
-    });
+        notifyHandle.update("success", "Descarga lista", "Se guardo el ticket");
+    } catch {
+        notifyHandle.update(
+            "danger",
+            "Error al descargar",
+            "Intenta de nuevo"
+        );
+    }
 }
 
 function getTicketFilename() {
