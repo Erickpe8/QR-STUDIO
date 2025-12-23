@@ -13,7 +13,7 @@ export function renderQrUrlForm() {
                     Ingresa el enlace
                 </h3>
                 <p class="text-sm text-slate-500">
-                    El código QR redirigirá a esta URL
+                    El codigo QR redirigira a esta URL
                 </p>
             </div>
 
@@ -22,11 +22,13 @@ export function renderQrUrlForm() {
                     id="qr-url-input"
                     type="url"
                     placeholder="https://ejemplo.com"
+                    aria-label="URL para generar el QR"
+                    aria-describedby="qr-url-error"
                     class="w-full px-4 py-3 border border-slate-300 rounded-xl
                            focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
-                <p id="qr-url-error" class="text-sm text-red-500 hidden">
-                    Ingresa una URL válida
+                <p id="qr-url-error" class="text-sm text-red-500 hidden" role="alert">
+                    Ingresa una URL valida
                 </p>
             </div>
 
@@ -35,6 +37,7 @@ export function renderQrUrlForm() {
                     id="qr-url-next"
                     class="px-6 py-3 bg-indigo-600 text-white rounded-xl
                            hover:bg-indigo-700 transition disabled:opacity-50"
+                    aria-label="Continuar al siguiente paso"
                     disabled
                 >
                     Continuar

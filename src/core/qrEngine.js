@@ -20,9 +20,20 @@ export function initQR(container) {
     qrInstance.append(mountEl);
 }
 
-export function updateQR(data) {
+export function updateQR(data, fgColor, bgColor) {
     if (!qrInstance || !data) return;
-    qrInstance.update({ data });
+
+    const options = { data };
+
+    if (fgColor) {
+        options.dotsOptions = { color: fgColor, type: "rounded" };
+    }
+
+    if (bgColor) {
+        options.backgroundOptions = { color: bgColor };
+    }
+
+    qrInstance.update(options);
 }
 
 export function downloadQR(filename = "qr.png") {

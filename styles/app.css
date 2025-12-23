@@ -1,3 +1,22 @@
+.main-grid {
+    align-items: flex-start;
+}
+
+.preview-column {
+    align-self: flex-start;
+}
+
+@media (min-width: 1024px) {
+    .main-grid {
+        grid-template-columns: minmax(0, 1fr) 340px;
+    }
+
+    .preview-column {
+        width: 340px;
+        max-width: 340px;
+    }
+}
+
 .step-circle {
     width: 48px;
     height: 48px;
@@ -53,4 +72,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.ticket-card {
+    width: 260px;
+    height: 460px;
+}
+
+.ticket-qr {
+    width: 180px;
+    height: 180px;
+}
+
+@media (min-width: 768px) {
+    .ticket-card {
+        width: 280px;
+        height: 500px;
+    }
+
+    .ticket-qr {
+        width: 200px;
+        height: 200px;
+    }
 }

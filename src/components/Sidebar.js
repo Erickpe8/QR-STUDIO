@@ -1,3 +1,14 @@
+import { qrTypes } from "../config/qrTypes.js";
+import { qrState, resetPayload, setSelectedType } from "../state.js";
+import { setPreviewState } from "./QrPreview.js";
+import { renderActiveStep } from "../navigation.js";
+
+const baseButtonClass =
+    "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition";
+const activeButtonClass = "bg-indigo-50 text-indigo-700";
+const inactiveButtonClass =
+    "bg-white text-slate-700 hover:bg-slate-50";
+
 export function renderSidebar() {
     const sidebar = document.getElementById("app-sidebar");
     if (!sidebar) return;
@@ -28,14 +39,20 @@ export function renderSidebar() {
                     Tipos de QR
                 </h2>
 
-                <button
-                    class="w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                           bg-indigo-50 text-indigo-700 font-medium
-                           hover:bg-indigo-100 transition"
-                >
-                    <i data-lucide="link" class="w-5 h-5"></i>
-                    <span>URL / Enlace</span>
-                </button>
+                ${qrTypes
+                    .map(
+                        type => `
+                    <button
+                        type="button"
+                        data-qr-type="${type.id}"
+                        class="${baseButtonClass} ${getButtonStateClass(type.id)}"
+                    >
+                        <i data-lucide="${type.icon}" class="w-5 h-5"></i>
+                        <span>${type.label}</span>
+                    </button>
+                `
+                    )
+                    .join("")}
             </nav>
         </div>
     `;
@@ -50,6 +67,21 @@ export function renderSidebar() {
 
     overlay.addEventListener("click", closeSidebar);
 
+    const typeButtons = sidebar.querySelectorAll("[data-qr-type]");
+
+    typeButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const nextType = button.dataset.qrType;
+            if (!nextType || nextType === qrState.selectedType) return;
+
+            setSelectedType(nextType);
+            resetPayload();
+            setPreviewState(false);
+            updateSidebarSelection();
+            renderActiveStep();
+        });
+    });
+
     window.toggleSidebar = () => {
         const isOpen = !panel.classList.contains("-translate-x-full");
 
@@ -60,4 +92,25 @@ export function renderSidebar() {
             overlay.classList.remove("hidden");
         }
     };
+
+    if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+    }
+}
+
+function getButtonStateClass(typeId) {
+    return qrState.selectedType === typeId
+        ? activeButtonClass
+        : inactiveButtonClass;
+}
+
+export function updateSidebarSelection() {
+    const buttons = document.querySelectorAll("[data-qr-type]");
+
+    buttons.forEach(button => {
+        const isActive = button.dataset.qrType === qrState.selectedType;
+        button.className = `${baseButtonClass} ${
+            isActive ? activeButtonClass : inactiveButtonClass
+        }`;
+    });
 }
