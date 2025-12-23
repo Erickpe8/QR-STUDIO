@@ -13,7 +13,7 @@ const fontScales = [
     { value: "lg", label: "Large" },
 ];
 
-export function renderQrUrlDesigner({ onBack, onNext } = {}) {
+export function renderQrDesigner({ onBack, onNext } = {}) {
     const container = document.getElementById("module-container");
     if (!container) return;
 

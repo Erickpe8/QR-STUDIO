@@ -1,5 +1,5 @@
 const baseCardClass =
-    "ticket-card relative border overflow-hidden";
+    "ticket-card relative border overflow-visible";
 
 const shadowClasses = {
     none: "shadow-none",
@@ -14,9 +14,9 @@ const layoutClasses = {
 };
 
 const spacingClasses = {
-    sm: "p-4 gap-4",
+    sm: "p-5 gap-4",
     md: "p-6 gap-5",
-    lg: "p-8 gap-6",
+    lg: "p-7 gap-6",
 };
 
 const fontScaleClasses = {
@@ -35,7 +35,7 @@ const fontScaleClasses = {
         footer: "text-xs",
     },
     lg: {
-        handle: "text-sm",
+        handle: "text-base",
         title: "text-2xl",
         subtitle: "text-base",
         number: "text-4xl",
@@ -70,7 +70,30 @@ export function updateTicketCard(props) {
             spacingClasses[ticketProps.spacing] || spacingClasses.md;
         const alignment =
             layoutClasses[ticketProps.layout] || layoutClasses.center;
-        content.className = `relative z-10 flex flex-col ${spacing} ${alignment}`;
+        content.className = `relative z-10 flex flex-col ${spacing}`;
+
+        const header = document.getElementById("ticket-header");
+        const footer = document.getElementById("ticket-footer");
+
+        if (header) {
+            header.className = `flex items-center gap-3 ${
+                alignment === layoutClasses.center
+                    ? "justify-center text-center"
+                    : alignment === layoutClasses.left
+                      ? "justify-start text-left"
+                      : "justify-end text-right"
+            }`;
+        }
+
+        if (footer) {
+            footer.className = `flex flex-col gap-2 opacity-80 ${
+                alignment === layoutClasses.center
+                    ? "items-center text-center"
+                    : alignment === layoutClasses.left
+                      ? "items-start text-left"
+                      : "items-end text-right"
+            }`;
+        }
     }
 
     const handle = document.getElementById("ticket-handle");
@@ -78,22 +101,62 @@ export function updateTicketCard(props) {
     const subtitle = document.getElementById("ticket-subtitle");
     const number = document.getElementById("ticket-number");
     const footer = document.getElementById("ticket-footer");
+    const footerSpacer = document.getElementById("ticket-footer-spacer");
     const footerLeft = document.getElementById("ticket-footer-left");
     const footerRight = document.getElementById("ticket-footer-right");
 
     const fontScale =
         fontScaleClasses[ticketProps.fontScale] || fontScaleClasses.md;
 
-    updateText(handle, ticketProps.handle, ticketProps.showHandle, fontScale.handle);
-    updateText(title, ticketProps.title, ticketProps.showTitle, fontScale.title);
-    updateText(subtitle, ticketProps.subtitle, ticketProps.showTitle, fontScale.subtitle);
-    updateText(number, ticketProps.ticketNumber, ticketProps.showTicketNumber, fontScale.number);
+    updateText(
+        handle,
+        ticketProps.handle,
+        ticketProps.showHandle,
+        fontScale.handle,
+        "opacity-60 uppercase tracking-wide"
+    );
+    updateText(
+        title,
+        ticketProps.title,
+        ticketProps.showTitle,
+        fontScale.title,
+        "font-semibold tracking-wide"
+    );
+    updateText(
+        subtitle,
+        ticketProps.subtitle,
+        ticketProps.showTitle,
+        fontScale.subtitle,
+        "opacity-70"
+    );
+    updateText(
+        number,
+        ticketProps.ticketNumber,
+        ticketProps.showTicketNumber,
+        fontScale.number,
+        "font-semibold tracking-tight"
+    );
 
     if (footer) {
         footer.classList.toggle("hidden", !ticketProps.showFooter);
     }
-    updateText(footerLeft, ticketProps.footerLeft, ticketProps.showFooter, fontScale.footer);
-    updateText(footerRight, ticketProps.footerRight, ticketProps.showFooter, fontScale.footer);
+    if (footerSpacer) {
+        footerSpacer.classList.toggle("hidden", ticketProps.showFooter);
+    }
+    updateText(
+        footerLeft,
+        ticketProps.footerLeft,
+        ticketProps.showFooter,
+        fontScale.footer,
+        "opacity-70"
+    );
+    updateText(
+        footerRight,
+        ticketProps.footerRight,
+        ticketProps.showFooter,
+        fontScale.footer,
+        "opacity-70"
+    );
 
     const badgeRow = document.getElementById("ticket-badges");
     if (badgeRow) {
@@ -101,18 +164,28 @@ export function updateTicketCard(props) {
     }
 
     const logo = document.getElementById("ticket-logo");
+    const logoPlaceholder = document.getElementById("ticket-logo-placeholder");
     const logoWrapper = document.getElementById("ticket-logo-wrapper");
-    if (logo && logoWrapper) {
-        const showLogo = ticketProps.logoEnabled && ticketProps.logo;
+    if (logo && logoWrapper && logoPlaceholder) {
+        const showLogo = ticketProps.logoEnabled;
+        const hasImage = Boolean(ticketProps.logo);
+
         logoWrapper.classList.toggle("hidden", !showLogo);
-        if (showLogo) {
-            logo.src = ticketProps.logo;
-        }
-        logoWrapper.className = `w-full flex ${
+        logoWrapper.className = `flex ${
             ticketProps.logoPosition === "top-left"
                 ? "justify-start"
                 : "justify-center"
         }`;
+
+        if (showLogo && hasImage) {
+            logo.src = ticketProps.logo;
+            logo.classList.remove("hidden");
+            logoPlaceholder.classList.add("hidden");
+        } else if (showLogo) {
+            logo.classList.add("hidden");
+            logoPlaceholder.classList.remove("hidden");
+            logoPlaceholder.textContent = getInitials(ticketProps);
+        }
     }
 
     const pattern = document.getElementById("ticket-pattern");
@@ -123,7 +196,7 @@ export function updateTicketCard(props) {
 
 function getTicketMarkup(props) {
     const ticketProps = withDefaults(props);
-    const { theme, pattern } = ticketProps;
+    const { theme } = ticketProps;
     const spacing =
         spacingClasses[ticketProps.spacing] || spacingClasses.md;
     const fontScale =
@@ -140,11 +213,6 @@ function getTicketMarkup(props) {
     }; background: ${getBackgroundStyle(theme)};"
         >
             <div
-                class="absolute -top-16 right-8 w-48 h-48 rounded-full blur-3xl opacity-40"
-                style="background: ${theme.gradientTo || theme.textColor};"
-            ></div>
-
-            <div
                 id="ticket-pattern"
                 class="absolute inset-0 pointer-events-none"
             ></div>
@@ -153,42 +221,48 @@ function getTicketMarkup(props) {
                 <div class="flex flex-col gap-3">
                     <div id="ticket-badges" class="flex flex-wrap gap-2 justify-center"></div>
 
-                    <div id="ticket-logo-wrapper" class="w-full flex justify-center ${
-        ticketProps.logoEnabled && ticketProps.logo ? "" : "hidden"
+                    <div id="ticket-header" class="flex items-center justify-center gap-3">
+                        <div id="ticket-logo-wrapper" class="${
+        ticketProps.logoEnabled ? "" : "hidden"
     }">
-                        <img
-                            id="ticket-logo"
-                            class="w-10 h-10 rounded-full object-cover border border-white/20"
-                            alt="Logo"
-                        />
+                            <div
+                                class="w-12 h-12 rounded-full border border-white/15 bg-white/5 backdrop-blur flex items-center justify-center overflow-hidden"
+                            >
+                                <img
+                                    id="ticket-logo"
+                                    class="w-full h-full object-cover"
+                                    alt="Logo"
+                                />
+                                <span id="ticket-logo-placeholder" class="opacity-80 text-sm font-semibold tracking-wide"></span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <div id="ticket-handle" class="${fontScale.handle}"></div>
+                            <div id="ticket-title" class="${fontScale.title}"></div>
+                            <div id="ticket-subtitle" class="${fontScale.subtitle}"></div>
+                        </div>
                     </div>
-
-                    <div id="ticket-handle" class="uppercase tracking-wide ${fontScale.handle}"></div>
-                    <div id="ticket-title" class="font-semibold ${fontScale.title}"></div>
-                    <div id="ticket-subtitle" class="opacity-80 ${fontScale.subtitle}"></div>
                 </div>
 
-                <div id="ticket-layout" class="flex flex-col items-center gap-4 flex-1 justify-center">
-                    <div
-                        class="bg-white/10 rounded-3xl p-3 border border-white/15"
-                    >
+                <div id="ticket-qr-zone" class="flex-1 flex items-center justify-center mt-2">
+                    <div class="mx-auto w-full max-w-[280px] rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/10">
                         <div
                             id="qr-canvas"
-                            class="ticket-qr flex items-center justify-center"
+                            class="ticket-qr w-full h-auto block"
                             role="img"
                             aria-label="Vista previa del codigo QR"
                         ></div>
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-3">
-                    <div id="ticket-number" class="font-semibold tracking-tight ${fontScale.number}"></div>
-
-                    <div id="ticket-footer" class="flex items-center justify-between opacity-75">
+                <div id="ticket-footer" class="flex flex-col gap-2 opacity-80">
+                    <div id="ticket-number" class="${fontScale.number}"></div>
+                    <div class="flex items-center justify-between w-full">
                         <span id="ticket-footer-left" class="${fontScale.footer}"></span>
                         <span id="ticket-footer-right" class="${fontScale.footer}"></span>
                     </div>
                 </div>
+                <div id="ticket-footer-spacer" class="h-6"></div>
             </div>
         </div>
     `;
@@ -220,15 +294,15 @@ function withDefaults(props = {}) {
         theme: {
             bgType: theme.bgType || "gradient",
             bgColor: theme.bgColor || "#0f172a",
-            gradientFrom: theme.gradientFrom || "#0f172a",
-            gradientTo: theme.gradientTo || "#1f2937",
+            gradientFrom: theme.gradientFrom || "#020617",
+            gradientTo: theme.gradientTo || "#0f172a",
             borderColor: theme.borderColor || "#1f2937",
             textColor: theme.textColor || "#f8fafc",
         },
         pattern: {
             enabled: Boolean(pattern.enabled),
             style: pattern.style || "squares",
-            opacity: typeof pattern.opacity === "number" ? pattern.opacity : 0.18,
+            opacity: typeof pattern.opacity === "number" ? pattern.opacity : 0.08,
             density: pattern.density || "media",
         },
         corners: props.corners || "rounded-3xl",
@@ -236,16 +310,18 @@ function withDefaults(props = {}) {
     };
 }
 
-function updateText(el, value, isVisible, sizeClass) {
+function updateText(el, value, isVisible, sizeClass, baseClass = "") {
     if (!el) return;
     const shouldShow = isVisible && value;
-    el.className = `${sizeClass || ""} ${shouldShow ? "" : "hidden"}`.trim();
+    el.className = `${baseClass} ${sizeClass || ""} ${
+        shouldShow ? "" : "hidden"
+    }`.trim();
     el.textContent = shouldShow ? value : "";
 }
 
 function getBackgroundStyle(theme) {
     if (theme.bgType === "gradient") {
-        return `linear-gradient(160deg, ${theme.gradientFrom}, ${theme.gradientTo})`;
+        return `linear-gradient(180deg, ${theme.gradientFrom}, ${theme.gradientTo})`;
     }
 
     return theme.bgColor;
@@ -294,7 +370,7 @@ function applyPattern(element, pattern, textColor) {
 }
 
 function getPatternBackground(style, color) {
-    const rgba = hexToRgba(color, 0.25);
+    const rgba = hexToRgba(color, 0.08);
 
     if (style === "squares") {
         return `linear-gradient(90deg, ${rgba} 1px, transparent 1px),
@@ -324,4 +400,15 @@ function hexToRgba(hex, alpha) {
     const b = intVal & 255;
 
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function getInitials(ticketProps) {
+    const source = ticketProps.title || ticketProps.handle || "QR";
+    const cleaned = source.replace(/[@/#]/g, "").trim();
+    const parts = cleaned.split(/\s+/).filter(Boolean);
+
+    if (!parts.length) return "QR";
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
 }

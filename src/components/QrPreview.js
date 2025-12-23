@@ -14,7 +14,7 @@ export function renderQrPreview() {
                 Vista previa
             </div>
 
-            <div class="relative flex items-center justify-center bg-slate-100 rounded-xl w-full h-[520px]">
+            <div class="relative flex items-center justify-center bg-slate-100 rounded-xl w-full h-[700px] p-6">
                 <div
                     id="qr-placeholder"
                     class="absolute inset-0 flex items-center justify-center
@@ -24,7 +24,7 @@ export function renderQrPreview() {
                     El codigo QR aparecera aqui
                 </div>
 
-                <div id="ticket-container" class="relative z-10 w-full flex justify-center"></div>
+                <div id="ticket-container" class="relative z-10 w-full flex justify-center max-w-[420px]"></div>
             </div>
 
             <button
@@ -47,7 +47,9 @@ export function renderQrPreview() {
 
     document
         .getElementById("qr-download-btn")
-        .addEventListener("click", () => downloadTicket());
+        .addEventListener("click", () => {
+            downloadTicket();
+        });
 
     setPreviewState(false);
 }
@@ -86,7 +88,7 @@ function getTicketProps() {
     };
 }
 
-function downloadTicket(filename) {
+async function downloadTicket(filename) {
     const ticket = document.getElementById("ticket-export");
 
     if (!ticket) {
@@ -99,10 +101,19 @@ function downloadTicket(filename) {
         return;
     }
 
+    await nextFrame();
+    const rect = ticket.getBoundingClientRect();
+
+    const scale = rect.width < 340 ? 3 : 2;
+
     html2canvas(ticket, {
         backgroundColor: null,
-        scale: 2,
+        scale,
         useCORS: true,
+        allowTaint: false,
+        logging: false,
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
     }).then(canvas => {
         const link = document.createElement("a");
         link.href = canvas.toDataURL("image/png");
@@ -119,4 +130,10 @@ function getTicketFilename() {
     )}-${pad(now.getHours())}${pad(now.getMinutes())}`;
 
     return `qr-ticket-${stamp}.png`;
+}
+
+function nextFrame() {
+    return new Promise(resolve => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
 }
