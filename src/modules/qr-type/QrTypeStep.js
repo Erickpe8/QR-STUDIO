@@ -102,21 +102,6 @@ function updateTypeSelectionUI() {
         nextButton.disabled = !qrState.selectedType;
     }
 
-    const sidebarButtons = document.querySelectorAll(
-        "#app-sidebar [data-qr-type]"
-    );
-
-    sidebarButtons.forEach(button => {
-        const isActive = button.dataset.qrType === qrState.selectedType;
-        const baseClass =
-            "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition";
-        const activeClass = "bg-indigo-50 text-indigo-700";
-        const inactiveClass = "bg-white text-slate-700 hover:bg-slate-50";
-
-        button.className = `${baseClass} ${
-            isActive ? activeClass : inactiveClass
-        }`;
-    });
 }
 
 function getButtonStateClass(typeId) {

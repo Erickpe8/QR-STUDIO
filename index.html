@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
     <!-- Tailwind -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -24,16 +25,8 @@
     <header id="app-header"></header>
 
     <!-- MAIN LAYOUT -->
-    <div class="flex min-h-[calc(100vh-64px)]">
-
-        <!-- SIDEBAR -->
-        <aside
-            id="app-sidebar"
-            class="hidden md:block w-72 bg-white border-r shrink-0"
-        ></aside>
-
-        <!-- CONTENT -->
-        <main class="flex-1 min-w-0">
+    <div class="min-h-[calc(100vh-64px)]">
+        <main class="min-w-0">
 
             <!-- GRID PRINCIPAL -->
             <div

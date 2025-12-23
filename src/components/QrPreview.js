@@ -1,4 +1,6 @@
 import { initQR, downloadQR, updateQR } from "../core/qrEngine.js";
+import { renderTicketCard, updateTicketCard } from "./TicketCard.js";
+import { qrState } from "../state.js";
 
 let qrCanvasEl = null;
 
@@ -12,29 +14,17 @@ export function renderQrPreview() {
                 Vista previa
             </div>
 
-            <!-- CONTENEDOR FIJO -->
-            <div class="flex items-center justify-center bg-slate-100 rounded-xl w-full h-[260px]">
+            <div class="relative flex items-center justify-center bg-slate-100 rounded-xl w-full h-[520px]">
                 <div
-                    class="relative flex items-center justify-center"
-                    style="width:220px; height:220px;"
+                    id="qr-placeholder"
+                    class="absolute inset-0 flex items-center justify-center
+                           text-slate-400 text-sm text-center px-6"
+                    aria-live="polite"
                 >
-                    <div
-                        id="qr-placeholder"
-                        class="absolute inset-0 flex items-center justify-center
-                               text-slate-400 text-sm text-center px-4"
-                        aria-live="polite"
-                    >
-                        El codigo QR aparecera aqui
-                    </div>
-
-                    <!-- AQUÍ SE MONTA EL QR -->
-                    <div
-                        id="qr-canvas"
-                        class="absolute inset-0 flex items-center justify-center"
-                        role="img"
-                        aria-label="Vista previa del codigo QR"
-                    ></div>
+                    El codigo QR aparecera aqui
                 </div>
+
+                <div id="ticket-container" class="relative z-10 w-full flex justify-center"></div>
             </div>
 
             <button
@@ -49,13 +39,15 @@ export function renderQrPreview() {
         </div>
     `;
 
-    qrCanvasEl = document.getElementById("qr-canvas");
+    const ticketContainer = document.getElementById("ticket-container");
+    qrCanvasEl = renderTicketCard(ticketContainer, getTicketProps());
 
     initQR(qrCanvasEl);
+    updateTicketCard(getTicketProps());
 
     document
         .getElementById("qr-download-btn")
-        .addEventListener("click", () => downloadQR("qr-studio.png"));
+        .addEventListener("click", () => downloadTicket());
 
     setPreviewState(false);
 }
@@ -81,4 +73,50 @@ export function getQrCanvas() {
 export function updateQrPreview(data, fgColor, bgColor) {
     if (!data) return;
     updateQR(data, fgColor, bgColor);
+}
+
+export function refreshTicketCard() {
+    updateTicketCard(getTicketProps());
+}
+
+function getTicketProps() {
+    return {
+        ...qrState.ticket,
+        qrData: qrState.text,
+    };
+}
+
+function downloadTicket(filename) {
+    const ticket = document.getElementById("ticket-export");
+
+    if (!ticket) {
+        downloadQR(filename);
+        return;
+    }
+
+    if (typeof html2canvas === "undefined") {
+        downloadQR(filename);
+        return;
+    }
+
+    html2canvas(ticket, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+    }).then(canvas => {
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = filename || getTicketFilename();
+        link.click();
+    });
+}
+
+function getTicketFilename() {
+    const now = new Date();
+    const pad = value => String(value).padStart(2, "0");
+    const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(
+        now.getDate()
+    )}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+
+    return `qr-ticket-${stamp}.png`;
 }

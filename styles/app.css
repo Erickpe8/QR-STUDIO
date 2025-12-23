@@ -73,3 +73,25 @@
     align-items: center;
     justify-content: center;
 }
+
+.ticket-card {
+    width: 260px;
+    height: 460px;
+}
+
+.ticket-qr {
+    width: 180px;
+    height: 180px;
+}
+
+@media (min-width: 768px) {
+    .ticket-card {
+        width: 280px;
+        height: 500px;
+    }
+
+    .ticket-qr {
+        width: 200px;
+        height: 200px;
+    }
+}

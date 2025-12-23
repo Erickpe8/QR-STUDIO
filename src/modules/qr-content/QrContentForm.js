@@ -260,7 +260,7 @@ function setupUrlForm(nextButton) {
 
         if (isValid) {
             qrState.text = value;
-            updateQR(value);
+            updateQR(value, qrState.fgColor, qrState.bgColor);
             setPreviewState(true);
         } else {
             qrState.text = "";
@@ -306,7 +306,7 @@ function setupWifiForm(nextButton) {
         if (isValid) {
             const wifiPayload = buildWifiPayload(qrState.payload);
             qrState.text = wifiPayload;
-            updateQR(wifiPayload);
+            updateQR(wifiPayload, qrState.fgColor, qrState.bgColor);
             setPreviewState(true);
         } else {
             qrState.text = "";
@@ -359,7 +359,7 @@ function setupContactForm(nextButton) {
         if (isValid) {
             const vcard = buildVCardPayload(qrState.payload);
             qrState.text = vcard;
-            updateQR(vcard);
+            updateQR(vcard, qrState.fgColor, qrState.bgColor);
             setPreviewState(true);
         } else {
             qrState.text = "";
