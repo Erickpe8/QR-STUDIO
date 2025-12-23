@@ -1,4 +1,4 @@
-import { initQR, downloadQR } from "../core/qrEngine.js";
+import { initQR, downloadQR, updateQR } from "../core/qrEngine.js";
 
 let qrCanvasEl = null;
 
@@ -56,20 +56,29 @@ export function renderQrPreview() {
     document
         .getElementById("qr-download-btn")
         .addEventListener("click", () => downloadQR("qr-studio.png"));
+
+    setPreviewState(false);
 }
 
 export function setPreviewState(hasData) {
     const placeholder = document.getElementById("qr-placeholder");
     const downloadBtn = document.getElementById("qr-download-btn");
+    const qrCanvas = document.getElementById("qr-canvas");
 
-    if (!placeholder || !downloadBtn) return;
+    if (!placeholder || !downloadBtn || !qrCanvas) return;
 
     placeholder.style.opacity = hasData ? "0" : "1";
     placeholder.style.pointerEvents = hasData ? "none" : "auto";
+    qrCanvas.style.opacity = hasData ? "1" : "0";
 
     downloadBtn.disabled = !hasData;
 }
 
 export function getQrCanvas() {
     return qrCanvasEl;
+}
+
+export function updateQrPreview(data, fgColor, bgColor) {
+    if (!data) return;
+    updateQR(data, fgColor, bgColor);
 }

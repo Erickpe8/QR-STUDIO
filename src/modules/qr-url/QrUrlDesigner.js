@@ -1,8 +1,7 @@
 import { qrState } from "../../state.js";
-import { goToStep } from "../../components/StepIndicator.js";
 import { updateQrPreview } from "../../components/QrPreview.js";
 
-export function renderQrUrlDesigner() {
+export function renderQrUrlDesigner({ onBack, onNext } = {}) {
     const container = document.getElementById("module-container");
     if (!container) return;
 
@@ -53,10 +52,14 @@ export function renderQrUrlDesigner() {
     });
 
     document.getElementById("back-to-content").addEventListener("click", () => {
-        goToStep(1);
+        if (onBack) {
+            onBack();
+        }
     });
 
     document.getElementById("next-to-design").addEventListener("click", () => {
-        goToStep(3);
+        if (onNext) {
+            onNext();
+        }
     });
 }
