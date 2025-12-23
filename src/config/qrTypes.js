@@ -26,13 +26,13 @@ export const qrTypes = [
     {
         id: "whatsapp",
         label: "WhatsApp",
-        description: "Envia un mensaje por WhatsApp",
+        description: "Envía un mensaje por WhatsApp",
         icon: "message-circle",
     },
     {
         id: "location",
-        label: "Ubicacion",
-        description: "Comparte una direccion o lugar",
+        label: "Ubicación",
+        description: "Comparte una dirección o lugar",
         icon: "map-pin",
     },
     {
@@ -49,8 +49,8 @@ export const qrTypes = [
     },
     {
         id: "phone",
-        label: "Telefono (Llamada)",
-        description: "Llamada directa por telefono",
+        label: "Teléfono (Llamada)",
+        description: "Llamada directa por teléfono",
         icon: "phone",
     },
 ];

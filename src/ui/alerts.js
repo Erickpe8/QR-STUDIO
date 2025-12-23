@@ -4,23 +4,23 @@ const DEFAULT_DURATION = 4500;
 const typeConfig = {
     info: {
         role: "status",
-        classes: "bg-info-soft border-info-subtle text-fg-info-strong",
+        classes: "bg-indigo-600 text-white",
     },
     success: {
         role: "alert",
-        classes: "bg-success-soft border-success-subtle text-fg-success-strong",
+        classes: "bg-emerald-600 text-white",
     },
     warning: {
         role: "alert",
-        classes: "bg-warning-soft border-warning-subtle text-fg-warning-strong",
+        classes: "bg-amber-500 text-slate-900",
     },
     danger: {
         role: "alert",
-        classes: "bg-danger-soft border-danger-subtle text-fg-danger-strong",
+        classes: "bg-rose-600 text-white",
     },
     loading: {
         role: "status",
-        classes: "bg-info-soft border-info-subtle text-fg-info-strong",
+        classes: "bg-indigo-600 text-white",
     },
 };
 
@@ -37,7 +37,13 @@ export function notify(type, title, message, options = {}) {
 }
 
 export function notifyList(type, title, items = [], options = {}) {
-    const toast = createToast({ type, title, items, options });
+    const toast = createToast({
+        type,
+        title,
+        message: options.message || "",
+        items,
+        options,
+    });
     enqueueToast(toast, options);
     return toast.handle;
 }
@@ -61,20 +67,19 @@ function ensureContainer() {
     container = document.createElement("div");
     container.id = CONTAINER_ID;
     container.className =
-        "fixed top-6 right-6 z-50 flex flex-col gap-3 w-[320px] max-w-[calc(100vw-2rem)]";
+        "fixed top-24 right-6 z-[99999] flex flex-col gap-3 w-[420px] max-w-[92vw]";
     document.body.appendChild(container);
     return container;
 }
 
-function createToast({ type, title, message, items, options }) {
+function createToast({ type, title, message, items, options = {} }) {
     const resolvedType = typeConfig[type] ? type : "info";
     const { classes, role } = typeConfig[resolvedType];
     const toast = document.createElement("div");
     toast.className = [
         "toast-enter",
-        "border rounded-xl shadow-lg px-4 py-3",
-        "backdrop-blur-sm bg-white/80",
-        "flex flex-col gap-2",
+        "border border-white/15 rounded-2xl shadow-2xl px-4 py-3",
+        "flex flex-col gap-3 cursor-pointer",
         classes,
     ].join(" ");
     toast.setAttribute("role", role);
@@ -91,20 +96,20 @@ function createToast({ type, title, message, items, options }) {
             "w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin";
         icon.appendChild(spinner);
     } else {
-        const dot = document.createElement("div");
-        dot.className = "w-2.5 h-2.5 rounded-full bg-current opacity-80";
-        icon.appendChild(dot);
+        const symbol = document.createElement("div");
+        symbol.className = "w-3.5 h-3.5 rounded-full bg-white/80";
+        icon.appendChild(symbol);
     }
 
     const body = document.createElement("div");
     body.className = "flex-1";
 
     const titleEl = document.createElement("div");
-    titleEl.className = "text-sm font-semibold leading-tight";
+    titleEl.className = "text-sm font-semibold";
     titleEl.textContent = title || "Aviso";
 
     const messageEl = document.createElement("div");
-    messageEl.className = "text-sm text-slate-600 mt-1";
+    messageEl.className = "text-sm opacity-90 mt-1";
     messageEl.textContent = message || "";
 
     body.appendChild(titleEl);
@@ -114,7 +119,7 @@ function createToast({ type, title, message, items, options }) {
 
     if (Array.isArray(items) && items.length) {
         const list = document.createElement("ul");
-        list.className = "mt-2 list-disc list-inside text-sm text-slate-600";
+        list.className = "mt-2 list-disc list-inside text-sm opacity-90 space-y-1";
         items.forEach(item => {
             const li = document.createElement("li");
             li.textContent = item;
@@ -125,10 +130,9 @@ function createToast({ type, title, message, items, options }) {
 
     const closeButton = document.createElement("button");
     closeButton.type = "button";
-    closeButton.className =
-        "ml-2 text-slate-400 hover:text-slate-600 transition";
+    closeButton.className = "ml-2 text-white/80 hover:text-white";
     closeButton.setAttribute("aria-label", "Cerrar");
-    closeButton.textContent = "x";
+    closeButton.textContent = "×";
 
     header.appendChild(icon);
     header.appendChild(body);
@@ -148,7 +152,18 @@ function createToast({ type, title, message, items, options }) {
         dismiss: () => dismissToast(toast),
     };
 
-    closeButton.addEventListener("click", () => handle.dismiss());
+    closeButton.addEventListener("click", event => {
+        event.stopPropagation();
+        handle.dismiss();
+    });
+
+    toast.actionHandler = options.onAction;
+    toast.addEventListener("click", event => {
+        if (event.target.closest("button")) return;
+        toast.actionHandler?.();
+    });
+
+    renderActionButton(toast, options);
 
     return { toast, handle };
 }
@@ -172,9 +187,8 @@ function updateToast(toast, type, title, message, options = {}) {
 
     toast.className = [
         "toast-enter",
-        "border rounded-xl shadow-lg px-4 py-3",
-        "backdrop-blur-sm bg-white/80",
-        "flex flex-col gap-2",
+        "border border-white/15 rounded-2xl shadow-2xl px-4 py-3",
+        "flex flex-col gap-3 cursor-pointer",
         config.classes,
     ].join(" ");
     toast.setAttribute("role", config.role);
@@ -184,7 +198,7 @@ function updateToast(toast, type, title, message, options = {}) {
     );
 
     const titleEl = toast.querySelector(".text-sm.font-semibold");
-    const messageEl = toast.querySelector(".text-sm.text-slate-600");
+    const messageEl = toast.querySelector(".text-sm.opacity-90");
     const listEl = toast.querySelector("ul");
     const iconWrapper = toast.querySelector(".mt-1");
 
@@ -199,6 +213,16 @@ function updateToast(toast, type, title, message, options = {}) {
         }
     }
     if (listEl) listEl.remove();
+    if (Array.isArray(options.items) && options.items.length) {
+        const list = document.createElement("ul");
+        list.className = "mt-2 list-disc list-inside text-sm opacity-90 space-y-1";
+        options.items.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = item;
+            list.appendChild(li);
+        });
+        toast.querySelector(".flex-1").appendChild(list);
+    }
 
     if (iconWrapper) {
         iconWrapper.innerHTML = "";
@@ -208,10 +232,9 @@ function updateToast(toast, type, title, message, options = {}) {
                 "w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin";
             iconWrapper.appendChild(spinner);
         } else {
-            const dot = document.createElement("div");
-            dot.className =
-                "w-2.5 h-2.5 rounded-full bg-current opacity-80";
-            iconWrapper.appendChild(dot);
+            const symbol = document.createElement("div");
+            symbol.className = "w-3.5 h-3.5 rounded-full bg-white/80";
+            iconWrapper.appendChild(symbol);
         }
     }
 
@@ -220,6 +243,36 @@ function updateToast(toast, type, title, message, options = {}) {
     if (resolvedType !== "loading" && duration > 0) {
         scheduleDismiss(toast, duration);
     }
+
+    toast.actionHandler = options.onAction;
+    renderActionButton(toast, options);
+}
+
+function renderActionButton(toast, options = {}) {
+    const existing = toast.querySelector("[data-toast-actions]");
+    if (existing) {
+        existing.remove();
+    }
+    if (!options.actionLabel) {
+        return;
+    }
+
+    const actions = document.createElement("div");
+    actions.dataset.toastActions = "true";
+    actions.className = "mt-3 flex justify-end";
+
+    const actionButton = document.createElement("button");
+    actionButton.type = "button";
+    actionButton.className =
+        "text-sm font-semibold text-white/90 hover:text-white underline";
+    actionButton.textContent = options.actionLabel;
+    actionButton.addEventListener("click", event => {
+        event.stopPropagation();
+        options.onAction?.();
+    });
+
+    actions.appendChild(actionButton);
+    toast.appendChild(actions);
 }
 
 function scheduleDismiss(toast, duration) {

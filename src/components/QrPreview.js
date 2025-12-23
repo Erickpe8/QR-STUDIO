@@ -25,7 +25,7 @@ export function renderQrPreview() {
                     El codigo QR aparecera aqui
                 </div>
 
-                <div id="ticket-container" class="relative z-10 w-full flex justify-center"></div>
+                <div id="ticket-container" class="relative z-10 w-full flex justify-center mx-auto"></div>
             </div>
 
             <button

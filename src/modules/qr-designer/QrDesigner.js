@@ -608,12 +608,12 @@ function bindDesignerControls() {
     updateCounter(
         document.getElementById("ticket-title-count"),
         (ticket.title || "").length,
-        28
+        23
     );
     updateCounter(
         document.getElementById("ticket-subtitle-count"),
         (ticket.subtitle || "").length,
-        40
+        23
     );
 }
 

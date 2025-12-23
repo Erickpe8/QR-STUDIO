@@ -5,12 +5,9 @@ import { renderQrDesigner } from "./modules/qr-designer/QrDesigner.js";
 import { renderQrPreview } from "./components/QrPreview.js";
 import { qrState, setStep } from "./state.js";
 
-let previewRendered = false;
-
 export function navigateToStep(step) {
     setStep(step);
     goToStep(step);
-    updateLayoutForStep(step);
     renderStep(step);
 }
 
@@ -19,6 +16,8 @@ export function renderActiveStep() {
 }
 
 function renderStep(step) {
+    renderLayoutForStep(step);
+
     if (step === 1) {
         renderQrTypeStep({
             onNext: () => navigateToStep(2),
@@ -40,36 +39,47 @@ function renderStep(step) {
     });
 }
 
-function updateLayoutForStep(step) {
-    const mainContent = document.querySelector(".main-content");
-    const optionsColumn = document.getElementById("options-column");
-    const previewColumn = document.getElementById("preview-column");
-    const optionsPanel = document.getElementById("options-panel");
-    const previewRoot = document.getElementById("qr-preview");
+function renderLayoutForStep(step) {
+    const layoutRoot = document.getElementById("layout-root");
+    if (!layoutRoot) return;
 
-    if (!mainContent || !optionsColumn || !previewColumn || !optionsPanel) return;
-
-    if (step >= 2) {
-        mainContent.className =
-            "main-content grid grid-cols-1 lg:grid-cols-12 gap-8 items-start";
-        optionsColumn.className = "lg:col-span-7 min-w-0";
-        optionsPanel.className = "options-panel h-full overflow-y-auto pr-2";
-        previewColumn.className = "lg:col-span-5 min-w-0";
-        previewColumn.classList.remove("hidden");
-
-        if (!previewRendered) {
-            renderQrPreview();
-            previewRendered = true;
-        }
+    if (step === 1) {
+        layoutRoot.innerHTML = `
+            <div class="w-full">
+                <div id="module-container"></div>
+            </div>
+        `;
+        window.syncPreviewTop?.();
         return;
     }
 
-    mainContent.className = "main-content";
-    optionsColumn.className = "min-w-0";
-    optionsPanel.className = "options-panel h-full";
-    previewColumn.className = "hidden";
-    if (previewRoot) {
-        previewRoot.innerHTML = "";
-    }
-    previewRendered = false;
+    layoutRoot.innerHTML = `
+        <div class="main-content grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-start">
+            <section
+                id="options-column"
+                class="options-column min-w-0 lg:col-span-2 lg:overflow-y-auto lg:pr-3 lg:pb-24"
+            >
+                <div
+                    class="options-panel bg-white rounded-2xl shadow-sm p-6 h-full space-y-6"
+                >
+                    <div id="module-container"></div>
+                </div>
+            </section>
+            <aside
+                id="preview-column"
+                class="preview-column min-w-0 lg:col-span-1 lg:sticky lg:block lg:z-10"
+            >
+                <div class="preview-panel bg-white rounded-2xl shadow-sm p-6">
+                    <div
+                        class="preview-frame flex items-center justify-center"
+                    >
+                        <div id="qr-preview"></div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    `;
+
+    renderQrPreview();
+    window.syncPreviewTop?.();
 }
