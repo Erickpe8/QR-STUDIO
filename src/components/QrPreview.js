@@ -1,5 +1,6 @@
 import { initQR, downloadQR, updateQR } from "../core/qrEngine.js";
 import { renderTicketCard, updateTicketCard } from "./TicketCard.js";
+import { notifyLoading } from "../ui/alerts.js";
 import { qrState } from "../state.js";
 
 let qrCanvasEl = null;
@@ -9,12 +10,12 @@ export function renderQrPreview() {
     if (!container) return;
 
     container.innerHTML = `
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 w-full max-w-[360px] xl:w-[360px] shrink-0">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 w-full max-w-[420px] shrink-0">
             <div class="text-sm font-semibold text-slate-700 mb-4">
                 Vista previa
             </div>
 
-            <div class="relative flex items-center justify-center bg-slate-100 rounded-xl w-full h-[700px] p-6">
+            <div class="relative flex items-center justify-center bg-slate-100 rounded-xl w-full h-[640px] p-6">
                 <div
                     id="qr-placeholder"
                     class="absolute inset-0 flex items-center justify-center
@@ -24,7 +25,7 @@ export function renderQrPreview() {
                     El codigo QR aparecera aqui
                 </div>
 
-                <div id="ticket-container" class="relative z-10 w-full flex justify-center max-w-[420px]"></div>
+                <div id="ticket-container" class="relative z-10 w-full flex justify-center mx-auto"></div>
             </div>
 
             <button
@@ -48,7 +49,11 @@ export function renderQrPreview() {
     document
         .getElementById("qr-download-btn")
         .addEventListener("click", () => {
-            downloadTicket();
+            const notifyHandle = notifyLoading(
+                "Generando descarga",
+                "Preparando imagen"
+            );
+            downloadTicket(notifyHandle);
         });
 
     setPreviewState(false);
@@ -84,42 +89,45 @@ export function refreshTicketCard() {
 function getTicketProps() {
     return {
         ...qrState.ticket,
-        qrData: qrState.text,
+        qrData: qrState.qrData,
     };
 }
 
-async function downloadTicket(filename) {
+async function downloadTicket(notifyHandle, filename) {
     const ticket = document.getElementById("ticket-export");
 
-    if (!ticket) {
-        downloadQR(filename);
-        return;
-    }
+    try {
+        if (!ticket || typeof html2canvas === "undefined") {
+            downloadQR(filename);
+            notifyHandle.update("success", "Descarga lista", "Se guardo el ticket");
+            return;
+        }
 
-    if (typeof html2canvas === "undefined") {
-        downloadQR(filename);
-        return;
-    }
+        await nextFrame();
+        const rect = ticket.getBoundingClientRect();
+        const scale = rect.width < 340 ? 3 : 2;
 
-    await nextFrame();
-    const rect = ticket.getBoundingClientRect();
-
-    const scale = rect.width < 340 ? 3 : 2;
-
-    html2canvas(ticket, {
-        backgroundColor: null,
-        scale,
-        useCORS: true,
-        allowTaint: false,
-        logging: false,
-        width: Math.round(rect.width),
-        height: Math.round(rect.height),
-    }).then(canvas => {
+        const canvas = await html2canvas(ticket, {
+            backgroundColor: null,
+            scale,
+            useCORS: true,
+            allowTaint: false,
+            logging: false,
+            width: Math.round(rect.width),
+            height: Math.round(rect.height),
+        });
         const link = document.createElement("a");
         link.href = canvas.toDataURL("image/png");
         link.download = filename || getTicketFilename();
         link.click();
-    });
+        notifyHandle.update("success", "Descarga lista", "Se guardo el ticket");
+    } catch {
+        notifyHandle.update(
+            "danger",
+            "Error al descargar",
+            "Intenta de nuevo"
+        );
+    }
 }
 
 function getTicketFilename() {

@@ -17,4 +17,40 @@ export const qrTypes = [
         description: "Comparte datos de contacto",
         icon: "user",
     },
+    {
+        id: "text",
+        label: "Texto",
+        description: "Comparte un mensaje directo",
+        icon: "file-text",
+    },
+    {
+        id: "whatsapp",
+        label: "WhatsApp",
+        description: "Envía un mensaje por WhatsApp",
+        icon: "message-circle",
+    },
+    {
+        id: "location",
+        label: "Ubicación",
+        description: "Comparte una dirección o lugar",
+        icon: "map-pin",
+    },
+    {
+        id: "event",
+        label: "Evento (Calendario)",
+        description: "Agenda una fecha en el calendario",
+        icon: "calendar",
+    },
+    {
+        id: "email",
+        label: "Correo (Email)",
+        description: "Abre un correo nuevo",
+        icon: "mail",
+    },
+    {
+        id: "phone",
+        label: "Teléfono (Llamada)",
+        description: "Llamada directa por teléfono",
+        icon: "phone",
+    },
 ];
