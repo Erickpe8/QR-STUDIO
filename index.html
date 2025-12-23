@@ -25,29 +25,30 @@
     <header id="app-header"></header>
 
     <!-- MAIN LAYOUT -->
-    <div class="min-h-[calc(100vh-64px)]">
+    <div class="min-h-screen">
         <main class="min-w-0">
-
-            <!-- GRID PRINCIPAL -->
-            <div
-                class="main-grid max-w-6xl mx-auto
-                       grid grid-cols-1
-                       gap-6 lg:gap-8
-                       p-4 md:p-6
-                       items-start"
-            >
-
-                <!-- LEFT: STEPS + FORMS -->
-                <section class="space-y-6 min-w-0">
+            <div class="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm p-4 md:p-5 w-full max-w-5xl mx-auto">
                     <div id="step-indicator"></div>
-                    <div id="module-container"></div>
-                </section>
+                </div>
 
-                <!-- RIGHT: PREVIEW -->
-                <section class="preview-column w-full shrink-0">
-                    <div id="qr-preview"></div>
-                </section>
+                <section
+                    class="main-content grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+                >
+                    <div class="lg:col-span-7 min-w-0">
+                        <div class="options-panel h-full overflow-y-auto pr-2">
+                            <div id="module-container"></div>
+                        </div>
+                    </div>
 
+                    <div class="lg:col-span-5 min-w-0">
+                        <div class="preview-panel sticky top-6">
+                            <div class="preview-frame max-h-[calc(100vh-260px)] overflow-hidden flex items-center justify-center">
+                                <div id="qr-preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </main>
     </div>

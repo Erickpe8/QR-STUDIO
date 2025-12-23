@@ -125,7 +125,7 @@ export function updateTicketCard(props) {
     updateText(
         subtitle,
         ticketProps.subtitle,
-        ticketProps.showTitle,
+        ticketProps.showSubtitle,
         fontScale.subtitle,
         "opacity-70"
     );
@@ -289,6 +289,7 @@ function withDefaults(props = {}) {
         fontScale: props.fontScale || "md",
         showHandle: props.showHandle !== false,
         showTitle: props.showTitle !== false,
+        showSubtitle: props.showSubtitle !== false,
         showTicketNumber: props.showTicketNumber !== false,
         showFooter: props.showFooter !== false,
         theme: {

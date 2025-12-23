@@ -9,12 +9,12 @@ export function renderQrPreview() {
     if (!container) return;
 
     container.innerHTML = `
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 w-full max-w-[360px] xl:w-[360px] shrink-0">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-xl p-6 w-full max-w-[420px] shrink-0">
             <div class="text-sm font-semibold text-slate-700 mb-4">
                 Vista previa
             </div>
 
-            <div class="relative flex items-center justify-center bg-slate-100 rounded-xl w-full h-[700px] p-6">
+            <div class="relative flex items-center justify-center bg-slate-100 rounded-xl w-full h-[640px] p-6">
                 <div
                     id="qr-placeholder"
                     class="absolute inset-0 flex items-center justify-center
@@ -24,7 +24,7 @@ export function renderQrPreview() {
                     El codigo QR aparecera aqui
                 </div>
 
-                <div id="ticket-container" class="relative z-10 w-full flex justify-center max-w-[420px]"></div>
+                <div id="ticket-container" class="relative z-10 w-full flex justify-center"></div>
             </div>
 
             <button

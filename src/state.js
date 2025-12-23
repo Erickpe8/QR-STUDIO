@@ -21,6 +21,7 @@ export const qrState = {
         fontScale: "md",
         showHandle: true,
         showTitle: true,
+        showSubtitle: true,
         showTicketNumber: true,
         showFooter: true,
         theme: {
