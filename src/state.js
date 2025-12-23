@@ -34,7 +34,7 @@ export const qrState = {
         pattern: {
             enabled: true,
             style: "squares",
-            opacity: 0.18,
+            opacity: 0.08,
             density: "media",
         },
         corners: "rounded-3xl",

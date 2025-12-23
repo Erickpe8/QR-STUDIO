@@ -75,23 +75,31 @@
 }
 
 .ticket-card {
-    width: 260px;
-    height: 460px;
+    width: 360px;
+    height: 640px;
 }
 
 .ticket-qr {
-    width: 180px;
-    height: 180px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: block;
 }
 
-@media (min-width: 768px) {
-    .ticket-card {
-        width: 280px;
-        height: 500px;
-    }
+.ticket-qr canvas,
+.ticket-qr img,
+.ticket-qr svg {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
 
-    .ticket-qr {
-        width: 200px;
-        height: 200px;
+#ticket-pattern {
+    filter: blur(0.3px);
+}
+
+@media (max-width: 768px) {
+    .ticket-card {
+        width: 320px;
+        height: 568px;
     }
 }
